@@ -1,0 +1,63 @@
+PROJECT ON ECR
+Integrate jenkins with ECR for deploying docker images.
+
+step 1: create the ECR repository on AWS 
+note: Tags immutability option allow you to choose whether or not, you want
+the image tags to be overwritten by subsequent image pushes using the same app.
+
+step 2: create an IAM user with programmatic access and provide
+ec2containerregisterfullaccess, copy credentials and save
+
+step 3: go to jenkins console and add the AWS credentials in the manage user option
+
+step 4: create a job to build the code and on the section "add post-build step"
+make sure you use the name of your ECR, copy the url of the ECR and put the
+protocol http:// in the front of url like so: http://url
+
+ANOTHER WAY TO CREATE IT THROUGH AWS CLI
+
+step 1: install aws cli
+step 2: configure AWS CLI
+aws configure --profile bttrm-backend-ecr
+AWS Access Key ID [None]: AKI***6EZ
+AWS Secret Access Key [None]: PpN***GNr
+Default region name [None]: us-east-1
+Default output format [None]: json
+step 3: aws --profile bttrm-backend-ecr ecr get-login --no-include-email --region us-east-1
+copy the command from #docker login -u aws -p <key> https....amazonaws.com
+step 4: paste the command and you will be logged in successfully
+step 5: do build images and run your docker commands as needed
+docker pull <image name>
+docker tag image:tag registry_url/repository
+docker push url_of_ecr/repository
+
+PROJECT ON JENKINS BACKUPS TO S3
+step 1: create S3 bucket
+step 2: create the IAM user with s3fullaccess. get credentials 
+step 3: got to jenkins to configure the environment variables
+to set the environment variables we got to 
+manage jenkins/configure system/global properties select environment variables 
+and add the variables as follow:
+add    name: AWS_ACCESS_KEY_ID
+       Value: <your access key>
+        name: AWS_SECRET_ACCESS_KEY
+       Value: <your secret access key>
+        name: AWS_DEFAULT_REGION
+       Value: <your region>
+apply and save
+
+
+step 4 create a freestyle job with a build trigger periodically 
+under "Build/add build step/execute shell
+
+put in the script that create a tar of $JENKINSHOME, copy the content and save in the s3 (confere script in chat)
+apply save and build now
+
+VOILA!
+
+
+
+
+
+
+ 
